@@ -216,3 +216,4 @@ venv/
 venv/
 nohup.out
 .env
+venv
