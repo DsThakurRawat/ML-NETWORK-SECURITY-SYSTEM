@@ -209,3 +209,5 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 nohup.out
+venv
+.env
