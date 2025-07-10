@@ -1,6 +1,6 @@
 #to tackle our custom exception i
 import sys
-from newtworksecurity.logging import logger
+from networksecurity.logging import logger
 class NetwrokSecurityException(Exception):
     def __init__(self,error_message,error_details:sys):
         self.error_message = error_message
