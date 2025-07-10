@@ -56,5 +56,6 @@ if __name__ == "__main__":
     Collection = "NetworkData"
     networkobj = NetworkDataExtract()
     records         =   networkobj.cv_to_json_convertor(file_path=FILE_PATH)
+    print(records)
     no_of_records = networkobj.insert_data_mogodb(records,DATABASE,Collection)
     print(no_of_records)
