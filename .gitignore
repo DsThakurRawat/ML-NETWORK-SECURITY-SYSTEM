@@ -217,3 +217,5 @@ venv/
 nohup.out
 .env
 venv
+.VisualStudioCode
+.vscode
