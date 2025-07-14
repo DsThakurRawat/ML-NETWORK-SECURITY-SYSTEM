@@ -27,7 +27,7 @@ class DataIngestion:
             self.data_ingestion_config = data_ingestion_config
         except Exception as e:
             raise NetwrokSecurityException(e,sys)   
-    def export_collection_as_dataframe(self,collection_name : str) -> pd.DataFrame:
+    def export_collection_as_dataframe(self) -> pd.DataFrame:
             """
             Export collection as dataframe
             Read data from database
@@ -83,7 +83,7 @@ class DataIngestion:
             raise NetwrokSecurityException(e,sys)
 
             
-        def initiate_data_ingestion(self):
+    def initiate_data_ingestion(self):
             try:
                 dataframe = self.export_collection_as_dataframe()
                 dataframe = self.export_data_into_feature_store(dataframe)

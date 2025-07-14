@@ -7,10 +7,10 @@ import sys
 
 if __name__ == '__main__':
      try:
-          TrainingPipelineConfig = TrainingPipelineConfig()
-          data_ingestion_config = DataIngestionConfig(TrainingPipelineConfig)
+          trainingpipelineconfig = TrainingPipelineConfig()
+          data_ingestion_config = DataIngestionConfig(trainingpipelineconfig)
           data_ingestion = DataIngestion(data_ingestion_config)
-          logging.info("Started data ingestion")
+          logging.info("Initiate  data ingestion")
           dataingestionartifact =  data_ingestion.initiate_data_ingestion()
           print(dataingestionartifact)
           
