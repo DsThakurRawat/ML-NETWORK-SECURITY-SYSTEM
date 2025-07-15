@@ -9,7 +9,7 @@ import numpy as np
 import os
 import sys
 from typing import List
-from networksecurity.utils.main_utils.utils import read_yaml_file
+from networksecurity.utils.main_utils.utils import read_yaml_file,write_yaml_file
 
 class DataValidation:
     def __init__(self,data_ingestion_artifact : DataIngestionArtifact,data_validation_config : DataValidationConfig):
@@ -58,13 +58,13 @@ class DataValidation:
                                })
 
 
-                drift_report_file_path = self.data_validation_config.drift_report_file_path 
+            drift_report_file_path = self.data_validation_config.drift_report_file_path 
 
 
             #create directory 
             dir_path = os.path.dirname(drift_report_file_path)
             os.makedirs(dir_path,exist_ok=True)
-            
+            write_yaml_file(file_path=drift_report_file_path,content=report)
                       
 
 
@@ -87,7 +87,26 @@ class DataValidation:
             status = self.validate_number_of_columns(dataframe=train_dataframe)
             if  not status:
                 error_message = f"{error_message} Test datafrmae does not contain all columns.\n"
-                ##lets check data drift 
+            status = self.validate_number_of_columns(dataframe=test_dataframe)
+            if  not status:
+                error_message = f"{error_message} Test datafrmae does not contain all columns.\n"
+             ## lets check the data drift
+
+            status = self.detect_dataset_drift(base_df=train_dataframe,current_df=test_dataframe)
+            dir_path = os.path.dirname(self.data_validation_config.drift_report_file_path)
+            os.makedirs(dir_path,exist_ok=True)
+
+            train_dataframe.to_csv(self.data_validation_config.valid_train_file_path,index=False,header=True)   
+            test_dataframe.to_csv(self.data_validation_config.valid_test_file_path,index=False,header=True)   
+            data_validation_artifact = DataValidationArtifact(
+                valid_train_file_path=self.data_validation_config.valid_train_file_path,
+                valid_test_file_path=self.data_validation_config.valid_test_file_path,
+                drift_report_file_path=self.data_validation_config.drift_report_file_path
+            )
+            return data_validation_artifact
+
+            ## write the report 
+
         except Exception as e:
             raise NetwrokSecurityException(e,sys)
             
