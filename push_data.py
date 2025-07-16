@@ -36,7 +36,7 @@ class NetworkDataExtract():
         except Exception as e:
             raise NetwrokSecurityException(e,sys)
         
-    def insert_data_mogodb(self,records,database,collection):
+    def insert_data_mongodb(self,records,database,collection):
         try:
             self.database = database
             self.collection = collection
@@ -57,5 +57,5 @@ if __name__ == "__main__":
     networkobj = NetworkDataExtract()
     records         =   networkobj.cv_to_json_convertor(file_path=FILE_PATH)
     print(records)
-    no_of_records = networkobj.insert_data_mogodb(records,DATABASE,Collection)
+    no_of_records = networkobj.insert_data_mongodb(records,DATABASE,Collection)
     print(no_of_records)
