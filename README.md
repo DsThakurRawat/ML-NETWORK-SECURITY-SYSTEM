@@ -1,1 +1,1 @@
-### Project is in working stage 
+###  "The project is currently in the development phase."
