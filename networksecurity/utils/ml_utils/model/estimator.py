@@ -6,7 +6,7 @@ import sys
 from networksecurity.exception.exception import NetwrokSecurityException
 from networksecurity.logging.logger import logging
 
-class NetworkModel:
+class NetworkModel: #class which have both preprocesssor and model file
     def __init__(self,preprocessor,model):
         try:
             self.preprocessor = preprocessor
