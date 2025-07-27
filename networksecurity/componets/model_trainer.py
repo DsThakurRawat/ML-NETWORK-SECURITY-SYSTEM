@@ -13,7 +13,7 @@ from networksecurity.entity.config_entity import ModelTrainerConfig
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
-
+import mlflow
 
 class ModelTrainer:
     def __init__(self, model_trainer_config: ModelTrainerConfig, data_transformation_artifact: DataTransformationArtifact):
@@ -22,6 +22,24 @@ class ModelTrainer:
             self.data_transformation_artifact = data_transformation_artifact
         except Exception as e:
             raise NetwrokSecurityException(e, sys)
+        
+    def track_mlflow(self,best_model,classification_train_metric):
+        with mlflow.start_run():
+            f1_score = classification_train_metric.f1_score
+            precision_score = classification_train_metric.precision_score
+            recall_score = classification_train_metric.recall_score
+
+            mlflow.log_metric("f1_score", f1_score)
+            mlflow.log_metric("precision_score", precision_score)
+            mlflow.log_metric("recall_score", recall_score)
+
+            mlflow.log_params(best_model.get_params())
+            mlflow.sklearn.log_model(best_model, "model")
+
+
+
+
+        
 
     def train_model(self, x_train, y_train, x_test, y_test):
         try:
@@ -65,11 +83,25 @@ class ModelTrainer:
             best_model_name = list(model_report.keys())[list(model_report.values()).index(best_model_score)]
             best_model = models[best_model_name]
 
+
+
+            
+
+
+
+
+
             y_train_pred = best_model.predict(x_train)
             y_test_pred = best_model.predict(x_test)
 
             classification_train_metric = get_classification_score(y_true=y_train, y_pred=y_train_pred)
             classification_test_metric = get_classification_score(y_true=y_test, y_pred=y_test_pred)
+            
+            # Track the mlflow model
+           
+            # Track the mlflow model
+            self.track_mlflow(best_model=best_model,classification_train_metric =  classification_train_metric)
+
 
             preprocessor = load_object(file_path=self.data_transformation_artifact.transformed_object_file_path)
             model_dir_path = os.path.dirname(self.model_trainer_config.trained_model_file_path)
@@ -109,3 +141,86 @@ class ModelTrainer:
         except Exception as e:
             logging.error(f"Error in initiate_model_trainer: {e}")
             raise NetwrokSecurityException(e, sys)
+
+
+"""
+using ml flow 
+
+MLflow is an open-source platform for managing the complete machine learning lifecycle. It helps you track, reproduce, and deploy machine learning models in a standardized and scalable way.
+
+🧠 Why Use MLflow?
+In any ML/DL project, you typically go through:
+
+Experimentation (different models, hyperparameters, datasets)
+
+Tracking (metrics, versions)
+
+Packaging (saving the model/code in reusable format)
+
+Deployment (exposing it to production)
+
+MLflow brings all of this together.
+
+| Component           | Purpose                                                                                     |
+| ------------------- | ------------------------------------------------------------------------------------------- |
+| **MLflow Tracking** | Log metrics, parameters, artifacts, source code for each experiment run                     |
+| **MLflow Projects** | Package your code in a reproducible format (e.g., conda, Docker)                            |
+| **MLflow Models**   | Save and serve models with support for many frameworks (e.g., sklearn, TensorFlow, PyTorch) |
+| **MLflow Registry** | Manage the lifecycle of models: staging → production → archived                             |
+
+
+✅ Features
+Works with any ML library (scikit-learn, TensorFlow, PyTorch, XGBoost, etc.)
+
+Logs:
+
+Metrics (accuracy, loss, etc.)
+
+Parameters (e.g., learning rate, depth)
+
+Artifacts (plots, models)
+
+Source version (Git commit)
+
+Model versioning and rollback
+
+Web UI to view and compare runs
+
+Integrates well with cloud and MLOps tools
+
+🛠 Example (MLflow Tracking in Python)
+
+import mlflow
+import mlflow.sklearn
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+
+with mlflow.start_run():
+    model = RandomForestClassifier(n_estimators=100, max_depth=5)
+    model.fit(X_train, y_train)
+    
+    preds = model.predict(X_test)
+    acc = accuracy_score(y_test, preds)
+    
+    mlflow.log_param("n_estimators", 100)
+    mlflow.log_param("max_depth", 5)
+    mlflow.log_metric("accuracy", acc)
+    
+    mlflow.sklearn.log_model(model, "random_forest_model")
+
+    
+      🔗 MLflow in MLOps
+MLflow is often used as the experiment tracking + model registry tool in MLOps pipelines, integrated with:
+
+Docker + FastAPI for deployment
+
+Airflow/Kubeflow for orchestration
+
+AWS/GCP/Azure for cloud hosting
+
+
+
+
+
+"""
+
